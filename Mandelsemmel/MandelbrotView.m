@@ -8,6 +8,27 @@
 
 #import "MandelbrotView.h"
 
+static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger maxIterations) {
+    NSUInteger iteration;
+    
+    const CGFloat EscapeRadius = 2.0;
+    const CGFloat ER2 = EscapeRadius * EscapeRadius;
+    
+    CGFloat zX, zY, zX2, zY2;
+    zX = zY = 0.0;
+    zX2 = zY2 = 0.0;
+    
+    for (iteration = 0; (zX2 + zY2) < ER2 && iteration < maxIterations; ++iteration) {
+        zY = 2.0 * zX * zY + cY;
+        zX = zX2 - zY2 + cX;
+        
+        zX2 = zX * zX;
+        zY2 = zY * zY;
+    }
+    
+    return iteration;
+}
+
 @interface MandelbrotView ()
 
 @property (nonatomic) NSUInteger maxIterations;
@@ -84,7 +105,7 @@
         for (int screenX = CGRectGetMinX(screenRect); screenX < CGRectGetMaxX(screenRect); ++screenX) {
             CGFloat cX = CGRectGetMinX(viewport) + (screenX + 0.5) * pixelWidth;
             
-            NSUInteger iterations = [self calculateNumberOfMandelbrotIterationsForPoint:CGPointMake(cX, cY)];
+            NSUInteger iterations = mandelbrot(cX, cY, self.maxIterations);
             
             UIColor *color = self.colors[iterations];
             [color setFill];
