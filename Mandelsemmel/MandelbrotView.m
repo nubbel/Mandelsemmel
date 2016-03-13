@@ -50,16 +50,26 @@
 }
 
 - (UIColor *)colorForPoint:(CGPoint)c {
-    const int MaxIterations = 255;
+    const NSUInteger MaxIterations = 255;
+    NSUInteger iterations = [self calculateNumberOfMandelbrotIterationsForPoint:c withMaxIterations:MaxIterations];
+    
+    if (iterations == MaxIterations) {
+        return [UIColor blackColor];
+    }
+    
+    return [UIColor colorWithHue:(CGFloat)iterations/MaxIterations saturation:1.0 brightness:1.0 alpha:1.0];
+}
+
+- (NSUInteger)calculateNumberOfMandelbrotIterationsForPoint:(CGPoint)c withMaxIterations:(NSUInteger)maxIterations {
+    NSUInteger iteration;
+    
     const int EscapeRadius = 2;
     const int ER2 = EscapeRadius * EscapeRadius;
-    
-    int iteration;
     
     CGPoint z = CGPointZero;
     CGPoint z2 = CGPointZero;
     
-    for (iteration = 0; (z2.x + z2.y) < ER2 && iteration < MaxIterations; ++iteration) {
+    for (iteration = 0; (z2.x + z2.y) < ER2 && iteration < maxIterations; ++iteration) {
         z.y = 2 * z.x * z.y + c.y;
         z.x = z2.x - z2.y + c.x;
         
@@ -67,11 +77,7 @@
         z2.y = z.y * z.y;
     }
     
-    if (iteration == MaxIterations) {
-        return [UIColor blackColor];
-    }
-    
-    return [UIColor colorWithHue:(CGFloat)iteration/MaxIterations saturation:1.0 brightness:1.0 alpha:1.0];
+    return iteration;
 }
 
 @end
