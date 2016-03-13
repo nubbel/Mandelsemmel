@@ -15,6 +15,7 @@
 		5D9886EF1C94A0FB00A18F9B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5D9886ED1C94A0FB00A18F9B /* LaunchScreen.storyboard */; };
 		5D9886FA1C94A0FB00A18F9B /* MandelsemmelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D9886F91C94A0FB00A18F9B /* MandelsemmelTests.m */; };
 		5D9887051C94A0FB00A18F9B /* MandelsemmelUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D9887041C94A0FB00A18F9B /* MandelsemmelUITests.m */; };
+		5D9887141C95886600A18F9B /* MandelbrotView.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D9887131C95886600A18F9B /* MandelbrotView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,8 @@
 		5D9887001C94A0FB00A18F9B /* MandelsemmelUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MandelsemmelUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D9887041C94A0FB00A18F9B /* MandelsemmelUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MandelsemmelUITests.m; sourceTree = "<group>"; };
 		5D9887061C94A0FB00A18F9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5D9887121C95886600A18F9B /* MandelbrotView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MandelbrotView.h; sourceTree = "<group>"; };
+		5D9887131C95886600A18F9B /* MandelbrotView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MandelbrotView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +108,8 @@
 				5D9886E31C94A0FB00A18F9B /* AppDelegate.m */,
 				5D9886E51C94A0FB00A18F9B /* ViewController.h */,
 				5D9886E61C94A0FB00A18F9B /* ViewController.m */,
+				5D9887121C95886600A18F9B /* MandelbrotView.h */,
+				5D9887131C95886600A18F9B /* MandelbrotView.m */,
 				5D9886E81C94A0FB00A18F9B /* Main.storyboard */,
 				5D9886EB1C94A0FB00A18F9B /* Assets.xcassets */,
 				5D9886ED1C94A0FB00A18F9B /* LaunchScreen.storyboard */,
@@ -272,6 +277,7 @@
 			files = (
 				5D9886E71C94A0FB00A18F9B /* ViewController.m in Sources */,
 				5D9886E41C94A0FB00A18F9B /* AppDelegate.m in Sources */,
+				5D9887141C95886600A18F9B /* MandelbrotView.m in Sources */,
 				5D9886E11C94A0FB00A18F9B /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
