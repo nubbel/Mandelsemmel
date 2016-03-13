@@ -30,7 +30,9 @@
     CGFloat pixelWidth = (CGRectGetMaxX(viewport) - CGRectGetMinX(viewport))  / (CGRectGetMaxX(screenRect) - CGRectGetMinX(screenRect));
     CGFloat pixelHeight = (CGRectGetMaxY(viewport) - CGRectGetMinY(viewport)) / (CGRectGetMaxY(screenRect) - CGRectGetMinY(screenRect));
     
+    
     NSLog(@"begin drawing");
+    NSDate *start = [NSDate date];
     for (int screenY = CGRectGetMinY(screenRect); screenY < CGRectGetMaxY(screenRect); ++screenY) {
         CGFloat cY = CGRectGetMinY(viewport) + (screenY + 0.5) * pixelHeight;
         
@@ -58,6 +60,7 @@
     }
     
     return [UIColor colorWithHue:(CGFloat)iterations/MaxIterations saturation:1.0 brightness:1.0 alpha:1.0];
+    NSLog(@"end drawing, took: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
 }
 
 - (NSUInteger)calculateNumberOfMandelbrotIterationsForPoint:(CGPoint)c withMaxIterations:(NSUInteger)maxIterations {
