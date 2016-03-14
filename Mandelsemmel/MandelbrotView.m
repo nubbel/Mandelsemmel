@@ -124,6 +124,23 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
         }
     }
     NSLog(@"end drawing, took: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
+    
+#ifdef DEBUG
+    [[UIColor whiteColor] setStroke];
+    
+    CGRect viewportInPixels = CGRectApplyAffineTransform(self.viewport, CGAffineTransformMakeScale(1.0/pixelRatio, 1.0/pixelRatio));
+    viewportInPixels.origin.x = canvasSize.width/2 - viewportInPixels.size.width/2;
+    viewportInPixels.origin.y = canvasSize.height/2 - viewportInPixels.size.height/2;
+    CGContextStrokeRectWithWidth(context, viewportInPixels, scaleFactor * 5);
+    
+    [[UIColor whiteColor] setFill];
+    
+    // draw x axis
+    CGContextFillRect(context, CGRectMake(0, canvasSize.height/2, canvasSize.width, scaleFactor));
+    
+    // draw y axis
+    CGContextFillRect(context, CGRectMake(canvasSize.width/2, 0, scaleFactor, canvasSize.height));
+#endif
 }
 
 - (NSUInteger)calculateNumberOfMandelbrotIterationsForPoint:(CGPoint)c {
