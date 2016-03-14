@@ -127,10 +127,17 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 #ifdef DEBUG
     [[UIColor whiteColor] setStroke];
     
+    // draw viewport
     CGRect viewportInPixels = CGRectApplyAffineTransform(self.viewport, CGAffineTransformMakeScale(1.0/pixelRatio, 1.0/pixelRatio));
     viewportInPixels.origin.x = canvasSize.width/2 - viewportInPixels.size.width/2;
     viewportInPixels.origin.y = canvasSize.height/2 - viewportInPixels.size.height/2;
     CGContextStrokeRectWithWidth(context, viewportInPixels, scaleFactor * 5);
+    
+    [[UIColor blueColor] setStroke];
+    
+    // draw tile
+    CGContextStrokeRectWithWidth(context, tileRect, 5);
+    
     
     [[UIColor whiteColor] setFill];
     
