@@ -89,33 +89,24 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 }
 
 - (void)drawRect:(CGRect)rect {
-    NSLog(@"-- drawRect: %@", NSStringFromCGRect(rect));
-    
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGAffineTransform transform = CGContextGetCTM(context);
     CGFloat scaleFactor = transform.a;
     CGAffineTransform scale = CGAffineTransformMakeScale(scaleFactor, scaleFactor);
-    NSLog(@"scale: %f", scaleFactor);
     
     // we want to work on real pixels, not points
     CGContextScaleCTM(context, 1 / scaleFactor, 1 / scaleFactor);
     
     // canvas
     CGSize canvasSize = CGSizeApplyAffineTransform(self.bounds.size, scale);
-    NSLog(@"canvas size: %@", NSStringFromCGSize(canvasSize));
     
     // the tile to be drawn
     CGRect tileRect = CGRectApplyAffineTransform(rect, scale);
-    NSLog(@"tile: %@", NSStringFromCGRect(tileRect));
     
     const CGFloat pixelRatio = MAX(self.viewport.size.width  / canvasSize.width, self.viewport.size.height / canvasSize.height);
     
-    NSLog(@"viewport: %@ (size in pixels: %@)", NSStringFromCGRect(self.viewport), NSStringFromCGSize(CGSizeApplyAffineTransform(self.viewport.size, CGAffineTransformMakeScale(1.0/pixelRatio, 1.0/pixelRatio))));
-    
     const NSUInteger maxIterations = self.maxIterations;
     
-    NSLog(@"begin drawing");
-    NSDate *start = [NSDate date];
     for (int canvasY = CGRectGetMinY(tileRect); canvasY < CGRectGetMaxY(tileRect); ++canvasY) {
         CGFloat cY = CGRectGetMidY(self.viewport) + (canvasY - (canvasSize.height/2.0) + 0.5) * pixelRatio;
         
@@ -132,7 +123,6 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
             CGContextFillRect(context, pixel);
         }
     }
-    NSLog(@"end drawing, took: %f sec", [[NSDate date] timeIntervalSinceDate:start]);
     
 #ifdef DEBUG
     [[UIColor whiteColor] setStroke];
