@@ -93,8 +93,8 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     
     CGRect viewport = CGRectMake(-2.5, -2.0, 4.0, 4.0);
     
-    CGFloat pixelWidth = (CGRectGetMaxX(viewport) - CGRectGetMinX(viewport))  / (CGRectGetMaxX(screenRect) - CGRectGetMinX(screenRect));
-    CGFloat pixelHeight = (CGRectGetMaxY(viewport) - CGRectGetMinY(viewport)) / (CGRectGetMaxY(screenRect) - CGRectGetMinY(screenRect));
+    CGFloat pixelWidth  = viewport.size.width  / screenRect.size.width;
+    CGFloat pixelHeight = viewport.size.height / screenRect.size.height;
     
     
     NSLog(@"begin drawing");
