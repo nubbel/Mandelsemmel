@@ -31,6 +31,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 
 @interface MandelbrotView ()
 
+@property (nonatomic) CGRect viewport;
 @property (nonatomic) NSUInteger maxIterations;
 @property (nonatomic, strong) NSArray<UIColor *> *colors;
 
@@ -59,6 +60,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 }
 
 - (void)commonInit {
+    self.viewport = CGRectMake(-2.5, -2, 5.0, 4.0);
     self.maxIterations = 255;
     [self precomputeColors];
 }
@@ -97,20 +99,19 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     CGRect tileRect = CGRectApplyAffineTransform(rect, scale);
     NSLog(@"tile: %@", NSStringFromCGRect(tileRect));
     
-    CGRect viewport = CGRectMake(-2.5, -2.0, 4.0, 4.0);
+    const CGFloat pixelRatio = MAX(self.viewport.size.width  / canvasSize.width, self.viewport.size.height / canvasSize.height);
     
-    const CGFloat pixelWidth  = viewport.size.width  / canvasSize.width;
-    const CGFloat pixelHeight = viewport.size.height / canvasSize.height;
+    NSLog(@"viewport: %@ (size in pixels: %@)", NSStringFromCGRect(self.viewport), NSStringFromCGSize(CGSizeApplyAffineTransform(self.viewport.size, CGAffineTransformMakeScale(1.0/pixelRatio, 1.0/pixelRatio))));
     
     const NSUInteger maxIterations = self.maxIterations;
     
     NSLog(@"begin drawing");
     NSDate *start = [NSDate date];
     for (int canvasY = CGRectGetMinY(tileRect); canvasY < CGRectGetMaxY(tileRect); ++canvasY) {
-        CGFloat cY = CGRectGetMinY(viewport) + (canvasY + 0.5) * pixelHeight;
+        CGFloat cY = CGRectGetMidY(self.viewport) + (canvasY - (canvasSize.height/2.0) + 0.5) * pixelRatio;
         
         for (int canvasX = CGRectGetMinX(tileRect); canvasX < CGRectGetMaxX(tileRect); ++canvasX) {
-            CGFloat cX = CGRectGetMinX(viewport) + (canvasX + 0.5) * pixelWidth;
+            CGFloat cX = CGRectGetMidX(self.viewport) + (canvasX - (canvasSize.width/2.0) + 0.5) * pixelRatio;
             
             NSUInteger iterations = mandelbrot(cX, cY, maxIterations);
             
