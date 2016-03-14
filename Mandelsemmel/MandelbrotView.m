@@ -78,39 +78,46 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 }
 
 - (void)drawRect:(CGRect)rect {
-    NSLog(@"drawRect: %@", NSStringFromCGRect(rect));
+    NSLog(@"-- drawRect: %@", NSStringFromCGRect(rect));
     
     CGContextRef context = UIGraphicsGetCurrentContext();
     CGAffineTransform transform = CGContextGetCTM(context);
-    CGFloat scale = transform.a;
-
-    NSLog(@"scale: %f", scale);
+    CGFloat scaleFactor = transform.a;
+    CGAffineTransform scale = CGAffineTransformMakeScale(scaleFactor, scaleFactor);
+    NSLog(@"scale: %f", scaleFactor);
     
-    CGRect screenRect = CGRectMake(rect.origin.x * scale,
-                                   rect.origin.y * scale,
-                                   rect.size.width * scale,
-                                   rect.size.height * scale);
+    // we want to work on real pixels, not points
+    CGContextScaleCTM(context, 1 / scaleFactor, 1 / scaleFactor);
+    
+    // canvas
+    CGSize canvasSize = CGSizeApplyAffineTransform(self.bounds.size, scale);
+    NSLog(@"canvas size: %@", NSStringFromCGSize(canvasSize));
+    
+    // the tile to be drawn
+    CGRect tileRect = CGRectApplyAffineTransform(rect, scale);
+    NSLog(@"tile: %@", NSStringFromCGRect(tileRect));
     
     CGRect viewport = CGRectMake(-2.5, -2.0, 4.0, 4.0);
     
-    CGFloat pixelWidth  = viewport.size.width  / screenRect.size.width;
-    CGFloat pixelHeight = viewport.size.height / screenRect.size.height;
+    const CGFloat pixelWidth  = viewport.size.width  / canvasSize.width;
+    const CGFloat pixelHeight = viewport.size.height / canvasSize.height;
     
+    const NSUInteger maxIterations = self.maxIterations;
     
     NSLog(@"begin drawing");
     NSDate *start = [NSDate date];
-    for (int screenY = CGRectGetMinY(screenRect); screenY < CGRectGetMaxY(screenRect); ++screenY) {
-        CGFloat cY = CGRectGetMinY(viewport) + (screenY + 0.5) * pixelHeight;
+    for (int canvasY = CGRectGetMinY(tileRect); canvasY < CGRectGetMaxY(tileRect); ++canvasY) {
+        CGFloat cY = CGRectGetMinY(viewport) + (canvasY + 0.5) * pixelHeight;
         
-        for (int screenX = CGRectGetMinX(screenRect); screenX < CGRectGetMaxX(screenRect); ++screenX) {
-            CGFloat cX = CGRectGetMinX(viewport) + (screenX + 0.5) * pixelWidth;
+        for (int canvasX = CGRectGetMinX(tileRect); canvasX < CGRectGetMaxX(tileRect); ++canvasX) {
+            CGFloat cX = CGRectGetMinX(viewport) + (canvasX + 0.5) * pixelWidth;
             
-            NSUInteger iterations = mandelbrot(cX, cY, self.maxIterations);
+            NSUInteger iterations = mandelbrot(cX, cY, maxIterations);
             
             UIColor *color = self.colors[iterations];
             [color setFill];
             
-            CGRect pixel = CGRectMake(screenX / scale, screenY / scale, 1, 1);
+            CGRect pixel = CGRectMake(canvasX, canvasY, 1, 1);
             
             CGContextFillRect(context, pixel);
         }
