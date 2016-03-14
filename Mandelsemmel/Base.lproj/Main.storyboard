@@ -13,11 +13,51 @@
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC" customClass="MandelbrotView">
+                    <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ed2-sn-xok" userLabel="Helper View">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
+                            <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" maximumZoomScale="10" bouncesZoom="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HEL-tH-DFL">
+                                <rect key="frame" x="0.0" y="20" width="600" height="580"/>
+                                <subviews>
+                                    <view contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="XvH-da-dIa" customClass="MandelbrotView">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="580"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="XvH-da-dIa" firstAttribute="top" secondItem="HEL-tH-DFL" secondAttribute="top" id="3PU-mG-dKj"/>
+                                    <constraint firstAttribute="trailing" secondItem="XvH-da-dIa" secondAttribute="trailing" id="DE4-mw-mAR"/>
+                                    <constraint firstAttribute="bottom" secondItem="XvH-da-dIa" secondAttribute="bottom" id="G0v-Pc-Lhc"/>
+                                    <constraint firstItem="XvH-da-dIa" firstAttribute="leading" secondItem="HEL-tH-DFL" secondAttribute="leading" id="Ndq-ri-eda"/>
+                                </constraints>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="wHX-cq-gdt"/>
+                                </connections>
+                            </scrollView>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="ed2-sn-xok" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="BDg-o1-pli"/>
+                            <constraint firstAttribute="trailing" secondItem="HEL-tH-DFL" secondAttribute="trailing" id="HOK-2i-OrB"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="ed2-sn-xok" secondAttribute="bottom" id="P8m-Oo-lho"/>
+                            <constraint firstItem="HEL-tH-DFL" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="WRb-5V-kc8"/>
+                            <constraint firstAttribute="trailing" secondItem="ed2-sn-xok" secondAttribute="trailing" id="aKa-xq-4DX"/>
+                            <constraint firstItem="HEL-tH-DFL" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="cqP-1U-dFa"/>
+                            <constraint firstItem="XvH-da-dIa" firstAttribute="width" secondItem="ed2-sn-xok" secondAttribute="width" id="fAg-qf-BVO"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="HEL-tH-DFL" secondAttribute="bottom" id="ked-T0-9G8"/>
+                            <constraint firstItem="XvH-da-dIa" firstAttribute="height" secondItem="ed2-sn-xok" secondAttribute="height" id="lL3-fx-Xpc"/>
+                            <constraint firstItem="ed2-sn-xok" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="t24-3f-qab"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="mandelbrotView" destination="XvH-da-dIa" id="gEs-TZ-7yV"/>
+                        <outlet property="scrollView" destination="HEL-tH-DFL" id="sR2-Ws-JMl"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>

@@ -10,4 +10,6 @@
 
 @interface MandelbrotView : UIView
 
+@property (nonatomic, readonly) CATiledLayer *tiledLayer;
+
 @end

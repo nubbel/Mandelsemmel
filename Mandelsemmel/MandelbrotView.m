@@ -39,6 +39,14 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 
 @implementation MandelbrotView
 
++ (Class)layerClass {
+    return [CATiledLayer class];
+}
+
+- (CATiledLayer *)tiledLayer {
+    return (CATiledLayer *)self.layer;
+}
+
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     
