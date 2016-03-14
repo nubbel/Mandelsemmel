@@ -28,7 +28,7 @@
     size_t maxLevels = (size_t)floor(log2(CGFLOAT_MAX / viewSize / scaleFactor));
     
     self.scrollView.minimumZoomScale = 1.0;
-    self.scrollView.maximumZoomScale = maxLevels * 1000; // empircally determined
+    self.scrollView.maximumZoomScale = maxLevels * 500; // empircally determined
     
     self.mandelbrotView.tiledLayer.levelsOfDetail = maxLevels;
     self.mandelbrotView.tiledLayer.levelsOfDetailBias = maxLevels - 1;
