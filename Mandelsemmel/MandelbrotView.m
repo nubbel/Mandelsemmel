@@ -62,6 +62,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 - (void)commonInit {
     self.viewport = CGRectMake(-2.5, -2, 5.0, 4.0);
     self.maxIterations = 255;
+    self.opaque = YES;
     [self precomputeColors];
 }
 
