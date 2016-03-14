@@ -38,4 +38,12 @@
     return self.mandelbrotView;
 }
 
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)prefersStatusBarHidden {
+    return true;
+}
+
 @end
