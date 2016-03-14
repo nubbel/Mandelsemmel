@@ -11,6 +11,17 @@
 static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger maxIterations) {
     NSUInteger iteration;
     
+    // check if point lies inside the period-2 bulb
+    if ((cX + 1) * (cX + 1) + cY * cY < 0.0625) {
+        return maxIterations;
+    }
+    
+    // check if point lies inside the cardioid
+    CGFloat q = (cX - 0.25) * (cX - 0.25) + cY * cY;
+    if (q * (q + (cX - 0.25)) < 0.25 * cY * cY) {
+        return maxIterations;
+    }
+    
     const CGFloat EscapeRadius = 2.0;
     const CGFloat ER2 = EscapeRadius * EscapeRadius;
     
