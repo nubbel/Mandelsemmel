@@ -21,12 +21,17 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    CGFloat viewSize = MAX(self.view.bounds.size.width, self.view.bounds.size.height);
+    CGFloat scaleFactor = self.view.contentScaleFactor;
+    
+    // Calculate maximum levels: viewSize * scaleFactor * 2^(maxLevels) = CGFLOAT_MAX
+    size_t maxLevels = (size_t)floor(log2(CGFLOAT_MAX / viewSize / scaleFactor));
+    
     self.scrollView.minimumZoomScale = 1.0;
-    self.scrollView.maximumZoomScale = 1000000;
+    self.scrollView.maximumZoomScale = maxLevels * 1000; // empircally determined
     
-    self.mandelbrotView.tiledLayer.levelsOfDetail = 1000;
-    self.mandelbrotView.tiledLayer.levelsOfDetailBias = 500;
-    
+    self.mandelbrotView.tiledLayer.levelsOfDetail = maxLevels;
+    self.mandelbrotView.tiledLayer.levelsOfDetailBias = maxLevels - 1;
 }
 
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
