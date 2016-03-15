@@ -50,6 +50,8 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 
 @implementation MandelbrotView
 
+#pragma mark - Layer configuration
+
 + (Class)layerClass {
     return [CATiledLayer class];
 }
@@ -57,6 +59,8 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 - (CATiledLayer *)tiledLayer {
     return (CATiledLayer *)self.layer;
 }
+
+#pragma mark - Lifecycle
 
 - (instancetype)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -79,15 +83,23 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 }
 
 - (void)commonInit {
-    self.viewport = CGRectMake(-2.5, -2, 5.0, 4.0);
-    self.maxIterations = 255;
     self.opaque = YES;
+    
+    // viewport is the clip of the fractal that is initially shown
+    self.viewport = CGRectMake(-2.5, -2, 5.0, 4.0);
+    
+    // maximum iterations to be used to determine if the number is in the mandelbrot set
+    self.maxIterations = 255;
+    
+    // generate colors
     [self precomputeColors];
 }
 
 - (void)dealloc {
     free(self.colors);
 }
+
+#pragma mark - Utility
 
 - (void)precomputeColors {
     uint8_t *colors = malloc((self.maxIterations + 1) * 3);
@@ -103,12 +115,16 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
         colors[3 * i + 1] = components[1] * 255.0;
         colors[3 * i + 2] = components[2] * 255.0;
     }
+    
+    // black
     colors[3 * self.maxIterations + 0] = 0;
     colors[3 * self.maxIterations + 1] = 0;
     colors[3 * self.maxIterations + 2] = 0;
     
     self.colors = colors;
 }
+
+#pragma mark - Rendering
 
 - (void)drawRect:(CGRect)rect {
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -125,6 +141,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     // the tile to be drawn
     CGRect tileRect = CGRectApplyAffineTransform(rect, scale);
     
+    // size of one pixel in the fractal
     const CGFloat pixelRatio = MAX(self.viewport.size.width  / canvasSize.width, self.viewport.size.height / canvasSize.height);
     
     const NSUInteger maxIterations = self.maxIterations;
@@ -132,6 +149,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     CGRect viewport = self.viewport;
     uint8_t *colors = self.colors;
     
+    // iteration bounds
     CGFloat minX = CGRectGetMinX(tileRect);
     CGFloat maxX = CGRectGetMaxX(tileRect);
     CGFloat minY = CGRectGetMinY(tileRect);
@@ -141,6 +159,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     CGFloat offsetX = canvasSize.width * 0.5 + 0.5;
     CGFloat offsetY = canvasSize.height * 0.5 + 0.5;
     
+    //
     CGFloat viewportOriginX = CGRectGetMidX(viewport);
     CGFloat viewportOriginY = CGRectGetMidY(viewport);
     
@@ -148,20 +167,22 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     NSUInteger iterations;
 
     
+    // prepare parameters for bitmap context
     CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
-
     const size_t numberOfComponents = CGColorSpaceGetNumberOfComponents(colorSpace) + 1;
     const size_t bitsPerComponent = 8;
     const size_t bytesPerPixel = (bitsPerComponent * numberOfComponents + 7)/8;
     const size_t bytesPerRow = bytesPerPixel * tileRect.size.width;
     
+    // allocate memore for the bitmap buffer
     void *bitmap = malloc(bytesPerRow * tileRect.size.height);
     
-    CGContextRef bitmapContext;
-    bitmapContext = CGBitmapContextCreate(bitmap, tileRect.size.width, tileRect.size.height, bitsPerComponent, bytesPerRow, colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrderDefault);
+    // create bitmap context
+    CGContextRef bitmapContext = CGBitmapContextCreate(bitmap, tileRect.size.width, tileRect.size.height, bitsPerComponent, bytesPerRow, colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrderDefault);
     
     uint8_t *buf = (uint8_t *)bitmap;
     
+    // populate bitmap buffer with mandelbrot data
     for (CGFloat canvasY = maxY - 1; canvasY >= minY; --canvasY) {
         cY = viewportOriginY + (canvasY - offsetY) * pixelRatio;
         
@@ -170,7 +191,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
             
             iterations = mandelbrot(cX, cY, maxIterations);
             
-            buf[0] = 0; // alpha
+            buf[0] = 0; // alpha (ignored)
             buf[1] = colors[3 * iterations + 0]; // red
             buf[2] = colors[3 * iterations + 1]; // green
             buf[3] = colors[3 * iterations + 2]; // blue
