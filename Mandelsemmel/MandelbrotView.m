@@ -44,7 +44,7 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 
 @property (nonatomic) CGRect viewport;
 @property (nonatomic) NSUInteger maxIterations;
-@property (nonatomic, strong) NSArray<UIColor *> *colors;
+@property (nonatomic, assign) uint8_t *colors;
 
 @end
 
@@ -85,16 +85,27 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     [self precomputeColors];
 }
 
+- (void)dealloc {
+    free(self.colors);
+}
+
 - (void)precomputeColors {
-    NSMutableArray *colors = [NSMutableArray arrayWithCapacity:self.maxIterations + 1];
+    uint8_t *colors = malloc((self.maxIterations + 1) * 3);
     
     for (int i = 0; i < self.maxIterations; ++i) {
-        colors[i] = [UIColor colorWithHue:(CGFloat)i/self.maxIterations
+        UIColor *color = [UIColor colorWithHue:(CGFloat)i/self.maxIterations
                                saturation:1.0
                                brightness:1.0
                                     alpha:1.0];
+        
+        const CGFloat *components = CGColorGetComponents(color.CGColor);
+        colors[3 * i + 0] = components[0] * 255.0;
+        colors[3 * i + 1] = components[1] * 255.0;
+        colors[3 * i + 2] = components[2] * 255.0;
     }
-    colors[self.maxIterations] = [UIColor blackColor];
+    colors[3 * self.maxIterations + 0] = 0;
+    colors[3 * self.maxIterations + 1] = 0;
+    colors[3 * self.maxIterations + 2] = 0;
     
     self.colors = colors;
 }
@@ -118,8 +129,8 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     
     const NSUInteger maxIterations = self.maxIterations;
     
-    NSArray *colors = self.colors;
     CGRect viewport = self.viewport;
+    uint8_t *colors = self.colors;
     
     CGFloat minX = CGRectGetMinX(tileRect);
     CGFloat maxX = CGRectGetMaxX(tileRect);
@@ -135,10 +146,23 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     
     CGFloat cX, cY;
     NSUInteger iterations;
-    UIColor *color;
-    CGRect pixel;
+
     
-    for (CGFloat canvasY = minY; canvasY < maxY; ++canvasY) {
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+
+    const size_t numberOfComponents = CGColorSpaceGetNumberOfComponents(colorSpace) + 1;
+    const size_t bitsPerComponent = 8;
+    const size_t bytesPerPixel = (bitsPerComponent * numberOfComponents + 7)/8;
+    const size_t bytesPerRow = bytesPerPixel * tileRect.size.width;
+    
+    void *bitmap = malloc(bytesPerRow * tileRect.size.height);
+    
+    CGContextRef bitmapContext;
+    bitmapContext = CGBitmapContextCreate(bitmap, tileRect.size.width, tileRect.size.height, bitsPerComponent, bytesPerRow, colorSpace, kCGImageAlphaNoneSkipFirst | kCGBitmapByteOrderDefault);
+    
+    uint8_t *buf = (uint8_t *)bitmap;
+    
+    for (CGFloat canvasY = maxY - 1; canvasY >= minY; --canvasY) {
         cY = viewportOriginY + (canvasY - offsetY) * pixelRatio;
         
         for (CGFloat canvasX = minX; canvasX < maxX; ++canvasX) {
@@ -146,14 +170,24 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
             
             iterations = mandelbrot(cX, cY, maxIterations);
             
-            color = colors[iterations];
-            CGContextSetFillColorWithColor(context, color.CGColor);
+            buf[0] = 0; // alpha
+            buf[1] = colors[3 * iterations + 0]; // red
+            buf[2] = colors[3 * iterations + 1]; // green
+            buf[3] = colors[3 * iterations + 2]; // blue
             
-            pixel = CGRectMake(canvasX, canvasY, 1, 1);
-            
-            CGContextFillRect(context, pixel);
+            buf += 4;
         }
     }
+    
+    // draw bitmap in context
+    CGImageRef tile = CGBitmapContextCreateImage(bitmapContext);
+    CGContextDrawImage(context, tileRect, tile);
+    
+    // Cleanup
+    free(bitmap);
+    CFRelease(tile);
+    CFRelease(colorSpace);
+    CFRelease(bitmapContext);
     
 #ifdef DEBUG
     [[UIColor whiteColor] setStroke];
