@@ -118,18 +118,38 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
     
     const NSUInteger maxIterations = self.maxIterations;
     
-    for (int canvasY = CGRectGetMinY(tileRect); canvasY < CGRectGetMaxY(tileRect); ++canvasY) {
-        CGFloat cY = CGRectGetMidY(self.viewport) + (canvasY - (canvasSize.height/2.0) + 0.5) * pixelRatio;
+    NSArray *colors = self.colors;
+    CGRect viewport = self.viewport;
+    
+    CGFloat minX = CGRectGetMinX(tileRect);
+    CGFloat maxX = CGRectGetMaxX(tileRect);
+    CGFloat minY = CGRectGetMinY(tileRect);
+    CGFloat maxY = CGRectGetMaxY(tileRect);
+    
+    // move to center of canvas; + 0.5, because we want to regard the center of the pixel
+    CGFloat offsetX = canvasSize.width * 0.5 + 0.5;
+    CGFloat offsetY = canvasSize.height * 0.5 + 0.5;
+    
+    CGFloat viewportOriginX = CGRectGetMidX(viewport);
+    CGFloat viewportOriginY = CGRectGetMidY(viewport);
+    
+    CGFloat cX, cY;
+    NSUInteger iterations;
+    UIColor *color;
+    CGRect pixel;
+    
+    for (CGFloat canvasY = minY; canvasY < maxY; ++canvasY) {
+        cY = viewportOriginY + (canvasY - offsetY) * pixelRatio;
         
-        for (int canvasX = CGRectGetMinX(tileRect); canvasX < CGRectGetMaxX(tileRect); ++canvasX) {
-            CGFloat cX = CGRectGetMidX(self.viewport) + (canvasX - (canvasSize.width/2.0) + 0.5) * pixelRatio;
+        for (CGFloat canvasX = minX; canvasX < maxX; ++canvasX) {
+            cX = viewportOriginX + (canvasX - offsetX) * pixelRatio;
             
-            NSUInteger iterations = mandelbrot(cX, cY, maxIterations);
+            iterations = mandelbrot(cX, cY, maxIterations);
             
-            UIColor *color = self.colors[iterations];
-            [color setFill];
+            color = colors[iterations];
+            CGContextSetFillColorWithColor(context, color.CGColor);
             
-            CGRect pixel = CGRectMake(canvasX, canvasY, 1, 1);
+            pixel = CGRectMake(canvasX, canvasY, 1, 1);
             
             CGContextFillRect(context, pixel);
         }
