@@ -235,24 +235,4 @@ static inline NSUInteger mandelbrot(CGFloat cX, CGFloat cY, const NSUInteger max
 #endif
 }
 
-- (NSUInteger)calculateNumberOfMandelbrotIterationsForPoint:(CGPoint)c {
-    NSUInteger iteration;
-    
-    const int EscapeRadius = 2;
-    const int ER2 = EscapeRadius * EscapeRadius;
-    
-    CGPoint z = CGPointZero;
-    CGPoint z2 = CGPointZero;
-    
-    for (iteration = 0; (z2.x + z2.y) < ER2 && iteration < self.maxIterations; ++iteration) {
-        z.y = 2 * z.x * z.y + c.y;
-        z.x = z2.x - z2.y + c.x;
-        
-        z2.x = z.x * z.x;
-        z2.y = z.y * z.y;
-    }
-    
-    return iteration;
-}
-
 @end
